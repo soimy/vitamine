@@ -7,14 +7,16 @@
 
 " Environment {
   set nocompatible
-  filetype on
-  filetype off
-  filetype plugin indent on
+  "filetype on
+  "filetype off
+  "filetype plugin indent on
 
   " for some env, vim has to be explicitly set to 256 colors
   let &t_Co=256
   let &t_AF="\e[38;5;%dm"
   let &t_AB="\e[48;5;%dm"
+  let &t_SI="\<Esc>]50;CursorShape=1\x7"
+  let &t_EI="\<Esc>]50;CursorShape=0\x7"
 " }
 
 " NeoBundles {
@@ -26,8 +28,8 @@
 
   " Github Repos
   NeoBundle 'Shougo/vimproc'              " Interactive command execution
-  "NeoBundle 'Shougo/neocomplcache'        " Ultimate auto-completion system
-  NeoBundle 'scrooloose/syntastic'        " Syntax checking hacks
+  NeoBundle 'Valloric/YouCompleteMe'      " Syntax auto-completion
+  "NeoBundle 'scrooloose/syntastic'        " Syntax checking hacks
   NeoBundle 'scrooloose/nerdtree'         " A tree explorer plugin
   NeoBundle 'scrooloose/nerdcommenter'    " Vim plugin for intensely orgasmic commenting
   NeoBundle 'kien/ctrlp.vim'              " Fuzzy file, buffer, mru, tag, etc finder
@@ -37,9 +39,9 @@
   NeoBundle 'Lokaltog/vim-easymotion'     " Vim motions on speed!
   NeoBundle 'hail2u/vim-css3-syntax'      " Add CSS3 syntax support to vim's built-in `syntax/css.vim`
   NeoBundle 'skammer/vim-css-color'       " Highlight colors in css files
-  NeoBundle 'keitheis/vim-plim'           " Syntax Highlighting for Plim
+  "NeoBundle 'keitheis/vim-plim'           " Syntax Highlighting for Plim
   NeoBundle 'pangloss/vim-javascript'     " Vastly improved vim's javascript indentation
-  "NeoBundle 'plasticboy/vim-markdown'     " Syntax highlighting and matching rules for Markdown
+  NeoBundle 'plasticboy/vim-markdown'     " Syntax highlighting and matching rules for Markdown
   NeoBundle 'tpope/vim-fugitive'          " A Git wrapper so awesome, it should be illegal
   NeoBundle 'tpope/vim-surround'          " quoting/parenthesizing made simple
 
@@ -47,7 +49,13 @@
   " NeoBundle 'sudo.vim'                    " Allows one to edit a file with prevledges from an unprivledged session
   NeoBundle 'ack.vim'                     " Plugin for the Perl module / CLI script 'ack'
   NeoBundle 'taglist.vim'                 " Provides an overview of the structure of source code
-  "NeoBundle 'UltiSnips'                   " The ultimate snippet solution for python enabled Vim
+  NeoBundle 'SirVer/UltiSnips'                   " The ultimate snippet solution for python enabled Vim
+  NeoBundle 'honza/vim-snippets'
+  NeoBundle 'octol/vim-cpp-enhanced-highlight'
+  NeoBundle 'davidoc/taskpaper.vim'
+  NeoBundle 'Raimondi/delimitMate'
+  NeoBundle 'timcharper/textile.vim'
+  NeoBundle 'Shutnik/jshint2.vim'
 
   " Auto-Installation
   if neobundle#exists_not_installed_bundles()
@@ -60,7 +68,7 @@
 " General {
   syntax on                  " syntax highlighting
   filetype plugin indent on  " automatically detect file types
-  "set mouse=a                " automatically enable mouse usage
+  set mouse=a                " automatically enable mouse usage
   set mousehide              " hide the mouse cursor while typing
   set encoding=utf-8
   scriptencoding utf-8
@@ -77,25 +85,30 @@
   set virtualedit=onemore         " allow for cursor beyond last character
   set history=800                 " Store a ton of history (default is 20)
   set hidden                      " allow buffer switching without saving
-  "set autochdir                   " change directory to the current window
+  set autochdir                   " change directory to the current window
 " }
 
 " Formatting {
   set nowrap                      " wrap long lines
   set autoindent                  " indent at the same level of the previous line
-  set expandtab                   " tabs are spaces, not tabs
+  "set expandtab                   " tabs are spaces, not tabs
   set shiftwidth=4                " use indents of 2 spaces
   set tabstop=4                   " an indentation every two columns
   set softtabstop=4               " let backspace delete indent
   set diffopt+=iwhite,vertical    " ignore the difference of indents
-  set matchpairs=(:),{:},[:],<:>
+  set matchpairs=(:),{:},[:]
   set foldmethod=marker
-  set colorcolumn=80
+  "set colorcolumn=80
   set smartindent
   set autoindent
   set cindent
 
-  " Remove trailing whitespaces and ^M chars
+" Visible TAB
+  "set list
+  set listchars=tab:\|.,trail:~,extends:>,precedes:<
+  nmap <f10> :set list!<CR>
+
+" Remove trailing whitespaces and ^M chars
   autocmd BufWritePre <buffer> call StripTrailingWhitespace()
   autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
   autocmd FileType java setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
@@ -106,13 +119,14 @@
   set tabpagemax=15
   set background=dark
 
-  let g:solarized_termtrans=1
-  let g:solarized_contrast='high'
-  let g:solarized_visibility='high'
+  "let g:solarized_termtrans=1
+  "let g:solarized_contrast='high'
+  "let g:solarized_visibility='high'
   "in mintty, comment out the following line
-  let g:solarized_termcolors=256
+  "let g:solarized_termcolors=256
 
-  colorscheme solarized
+  colorscheme monokai
+  let g:monokai_original = 1
 
   if has('cmdline_info')
     set ruler                   " show the ruler
@@ -128,34 +142,35 @@
   " set rnu                         " relative line number
   set nu
   set numberwidth=4               " set the width of line number gutter column
-  set linespace=2                 " set spaces between rows
+  "set linespace=2                 " set spaces between rows
   set ignorecase                  " case insensitive search
   set backspace=indent,eol,start  " backspace for dummies
   set smartcase                   " case sensitive when uc present
   set showmatch                   " show matching brackets/parenthesis
   set hlsearch                    " highlight search terms
   set incsearch                   " find as you type search
-  set wildmenu                    " show list instead of just completing
-  set wildmode=list:longest,full  " command <Tab> completion, list matches, then longest common part, then all
-  set whichwrap=b,s,h,l,<,>,[,]   " backspace and cursor keys wrap to
+  "set wildmenu                    " show list instead of just completing
+  "set wildmode=list:longest,full  " command <Tab> completion, list matches, then longest common part, then all
+  set whichwrap=b,s,h,l,[,],<,>	  " backspace and cursor keys wrap to
   set scrolljump=5                " lines to scroll when cursor leaves screen
   set scrolloff=3                 " minimum lines to keep above and below cursor
   set foldenable                  " auto fold code
   set cursorline                  " highlight current line
-  set anti                        " make text pretty
+  set noantialias                 " make text pretty
 " }
 
 " GUI Settings {
   if has("gui_running") || has("gui_macvim")
     set guioptions-=T           " remove the MacVim's toolbar
     if has('gui_macvim')
-      set transparency=5        " Make the window slightly transparent
+      set transparency=8        " Make the window slightly transparent
     endif
 
     if has("gui_gtk2")
       set guifont=Monaco\ 13,Consolas\ 13
     else
-      set guifont=Monaco:h13,Consolas:h13
+	  set guifont=BPmono:h13,Monaco:h13,Consolas:h13
+      "set guifont=Monaco:h12,Consolas:h12
     endif
   endif
 " }
@@ -186,10 +201,10 @@
   nmap <leader>f9 :set foldlevel=9<CR>
 
   " Easy indent for code blocks
-  nmap <tab>    v>
-  nmap <s-tab>  v<
-  vmap <tab>    >gv
-  vmap <s-tab>  <gv
+  "nmap <tab>    v>
+  "nmap <s-tab>  v<
+  "vmap <tab>    >gv
+  "vmap <s-tab>  <gv
 
   " toggle between relative and absolute numbering
   " nnoremap <F3> :NumbersToggle<CR>
@@ -215,14 +230,25 @@
 " }
 
 " SyntaxCheckers {
-  let g:syntastic_mode_map = {
-    \ 'mode': 'active',
-    \ 'passive_filetypes': ['html','java'] }
+  "let g:syntastic_mode_map = {
+    "\ 'mode': 'active',
+    "\ 'passive_filetypes': ['html','java'] }
 
   " C0103:Invalid name; C0111: no doc string; W0141 map/filter
-  let g:syntastic_python_pylint_args = '-d C0103,C0111,W0141'
-  let g:syntastic_javascript_jshint_conf = '~/.jshintrc'
+  "let g:syntastic_python_pylint_args = '-d C0103,C0111,W0141'
+  "let g:syntastic_javascript_jshint_conf = '~/.jshintrc'
 " }
+"
+" syntastic {{{
+    "let g:syntastic_error_symbol='✗'
+    "let g:syntastic_warning_symbol='⚠'
+    "let g:syntastic_enable_highlighting = 1
+    "let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
+    "let g:syntastic_cpp_check_header = 1
+    "let g:syntastic_cpp_no_default_include_dirs = 1
+    "let g:syntastic_cpp_compiler = 'clang++'
+    "let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
+" }}}
 
 " vimScript {
   let g:html_indent_inctags = 'html,body,head,tbody'
@@ -237,6 +263,38 @@
   "let g:neocomplcache_enable_camel_case_completion = 1
   "let g:neocomplcache_enable_underbar_completion = 1
   "let g:neocomplcache_min_syntax_length = 3
+" }
+
+" YouCompleteMe {
+    let g:ycm_min_num_of_chars_for_completion = 1
+    let g:ycm_confirm_extra_conf = 0
+    let g:ycm_complete_in_comments_and_strings = 1
+    let g:ycm_add_preview_to_completeopt = 1
+	"let g:ycm_key_list_select_completion = ['<C-N>', '<Down>']
+    let g:ycm_key_invoke_completion = '<C-k>'
+    "let g:ycm_filetype_specific_completion_to_diable = { 'cpp' : 1 }
+    let g:ycm_filetype_whitelist = { 'cpp' : 1, 'c' : 1 }
+    let g:ycm_filetype_blacklist = {
+            \'vim' : 1,
+            \'vimshell' : 1,
+            \'snippets' : 1,
+            \'cmake' : 1,
+            \'html' : 1
+            \}
+    set completeopt=menu,longest
+
+    nnoremap <leader>gl :YcmCompleter GoToDeclaration<CR>
+    nnoremap <leader>gf :YcmCompleter GoToDefinition<CR>
+    nnoremap <leader>gg :YcmCompleter GoToDefinitionElseDeclaration<CR>
+
+    "let g:ycm_error_symbol = '✗'
+    let g:ycm_error_symbol = 'X>'
+    "let g:ycm_warning_symbol = '⚠'
+    let g:ycm_warning_symbol = '!>'
+    nmap <F4> :YcmDiags<CR>
+    let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py'
+    "let g:ycm_collect_identifiers_from_tags_files = 1
+    let g:ycm_autoclose_preview_window_after_completion = 1
 " }
 
 " nerdcommenter {
@@ -285,7 +343,7 @@
 " Powerline {
   let g:Powerline_symbols = 'fancy'
   "if not use patched font:
-  "let g:Powerline_symbols = 'compatible'
+  let g:Powerline_symbols = 'compatible'
   let g:Powerline_colorscheme = 'solarized256'
 " }
 
@@ -296,8 +354,33 @@
 " }
 
 " UltiSnips {
-  let g:UltiSnipsSnippetDirectories=["snippets"]
+	"let g:UltiSnipsExpandTrigger="<tab>"
+	let g:UltiSnipsJumpForwardTrigger="<tab>"
+	let g:UltiSnipsJumpBackwardTrigger="<c-tab>"
+	function! g:UltiSnips_Complete()
+		call UltiSnips#ExpandSnippet()
+		if g:ulti_expand_res == 0
+			if pumvisible()
+				return "\<C-n>"
+			else
+				call UltiSnips#JumpForwards()
+				if g:ulti_jump_forwards_res == 0
+				   return "\<TAB>"
+				endif
+			endif
+		endif
+		return ""
+	endfunction
+
+	autocmd BufEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
+    "let g:UltiSnipsJumpForwardTrigger="<tab>"
+	let g:UltiSnipsListSnippets="<c-e>"
+    " this mapping Enter key to <C-y> to chose the current highlight item
+    " and close the selection list, same as other IDEs.
+    " CONFLICT with some plugins like tpope/Endwise
+	inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 " }
+
 
 " Autocmd {
   autocmd! bufwritepost vimrc source ~/.vim/vimrc
@@ -402,3 +485,25 @@ endif
 " ctags {
 map <f12> :!~/bin/git_ctags.sh<cr>
 " }
+
+set noimdisable
+autocmd! InsertLeave * set imdisable|set iminsert=0
+autocmd! InsertEnter * set noimdisable|set iminsert=0
+
+"add command to complie opencv program"
+nnoremap <silent><leader>2 :call CompileRunOpencv() <CR>
+function! CompileRunOpencv()
+    "let IncDir = "/usr/local/include"
+    "let LibDir = "/usr/local/lib"
+    "let Libs = "-lopencv_core -lopencv_highgui -lopencv_imgproc"
+    exec "w"
+    exec "lcd %:p:h"
+    "exec "r !g++ -I" . IncDir . " -L" . LibDir . " % " . Libs . " -o %< "
+    exec "r !g++ `pkg-config --libs --cflags opencv` -o %< "
+    echo "compile finished!"
+endfunc
+
+" Auto save session and reopen
+	map <F2> :mksession! ~/vim_session <cr>
+	map <F3> :source ~/vim_session <cr>
+

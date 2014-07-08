@@ -3,7 +3,7 @@
 " Author: Tomas Restrepo <tomas@winterdom.com>
 "
 " Note: Based on the monokai theme for textmate
-" by Wimer Hazenberg and its darker variant 
+" by Wimer Hazenberg and its darker variant
 " by Hamish Stuart Macpherson
 "
 
@@ -18,12 +18,12 @@ if version > 580
         syntax reset
     endif
 endif
-let g:colors_name="molokai"
+let g:colors_name="monokai"
 
-if exists("g:molokai_original")
-    let s:molokai_original = g:molokai_original
+if exists("g:monokai_original")
+    let s:monokai_original = g:monokai_original
 else
-    let s:molokai_original = 0
+    let s:monokai_original = 0
 endif
 
 
@@ -105,7 +105,7 @@ hi Visual                        guibg=#403D3D
 hi WarningMsg      guifg=#FFFFFF guibg=#333333 gui=bold
 hi WildMenu        guifg=#66D9EF guibg=#000000
 
-if s:molokai_original == 1
+if s:monokai_original == 1
    hi Normal          guifg=#F8F8F2 guibg=#272822
    hi Comment         guifg=#75715E
    hi CursorLine                    guibg=#3E3D32
@@ -116,7 +116,7 @@ if s:molokai_original == 1
    hi SpecialKey      guifg=#75715E
 else
    hi Normal          guifg=#F8F8F2 guibg=#1B1D1E
-   hi Comment         guifg=#465457
+   hi Comment         guifg=#75715E
    hi CursorLine                    guibg=#293739
    hi CursorColumn                  guibg=#293739
    hi ColorColumn                   guibg=#232526
@@ -129,7 +129,7 @@ end
 " Support for 256-color terminal
 "
 if &t_Co > 255
-   if s:molokai_original == 1
+   if s:monokai_original == 1
       hi Normal                   ctermbg=234
       hi CursorLine               ctermbg=235   cterm=none
    else
